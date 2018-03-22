@@ -8,7 +8,7 @@
 
     <h2>Please Login to access the admin page</h2>
 
-    <p><?= $this->user->getFlash() ?></p>
+    <p><?= $this->session->getFlash() ?></p>
     <form action="/admin" class="form-horizontal" method="post">
         <div class="form-group">
             <label class="col-sm-2 control-label" for="username">Username:</label>

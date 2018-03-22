@@ -1,70 +1,22 @@
 <?php
 namespace Controllers;
 
-use Model\NewsManager;
-use Model\News;
 use PDO;
-use DateTime;
+use Model\News\NewsManager;
 
-class IndexController extends NewsManager {
+class IndexController {
 
-    protected $db;
+    protected $newsManager;
 
     public function __construct(PDO $db) {
-        $this->db = $db;
+        $this->newsManager = new NewsManager($db);
     }
 
-    public function getList($start = -1, $limit = -1) {
-        $sql = 'SELECT id, author, title, content, dateAdded, dateModif FROM news ORDER BY id DESC';
-
-        if ($start != -1 || $limit != -1) {
-            $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) $start;
-        }
-
-        $request = $this->db->query($sql);
-        $request->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, 'Model\News');
-
-        $newsList = $request->fetchAll();
-
-        foreach ($newsList as $news) {
-            $news->setDateAdded(new DateTime($news->getDateAdded()));
-            $news->setDateModified(new DateTime($news->getDateModified()));
-        }
-
-        $request->closeCursor();
-
-        return $newsList;
+    public function getNews($start = -1, $limit = -1) {
+        return $this->newsManager->getNewsList($start, $limit);
     }
 
     public function getOne($id) {
-        $request = $this->db->prepare('SELECT id, author, title, content, dateAdded, dateModif FROM news WHERE id = :id');
-        $request->bindValue(':id', (int) $id, PDO::PARAM_INT);
-        $request->execute();
-
-        $request->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, 'Model\News');
-
-        $news = $request->fetch();
-
-        $news->setDateAdded(new DateTime($news->getDateAdded()));
-        $news->setDateModified(new DateTime($news->getDateModified()));
-
-        return $news;
+        return $this->newsManager->getNewsById($id);
     }
-
-    protected function add(News $news) {
-
-    }
-
-    protected function update(News $news) {
-
-    }
-
-    public function delete($id) {
-
-    }
-
-    public function count() {
-
-    }
-
 }

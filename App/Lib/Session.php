@@ -3,7 +3,7 @@ namespace Lib;
 
 session_start();
 
-class User
+class Session
 {
     public function getAttribute($attr)
     {
@@ -12,7 +12,7 @@ class User
 
     public function getFlash()
     {
-        $flash = "Look at app.xml for info";
+        $flash = "Username = defaultNickName, Password = pwd";
         if (isset($_SESSION['flash'])) {
             $flash = $_SESSION['flash'];
             unset($_SESSION['flash']);
@@ -36,7 +36,7 @@ class User
         $_SESSION[$attr] = $value;
     }
 
-    public function setAuthenticated($authenticated = true)
+    public function setAuthenticated($authenticated = true, $user)
     {
         if (!is_bool($authenticated))
         {
@@ -44,10 +44,21 @@ class User
         }
 
         $_SESSION['auth'] = $authenticated;
+        $_SESSION['user'] = $user->getNickName();
+        $_SESSION['level'] = $user->getAccessLevel();
+        return $user;
     }
 
     public function setFlash($value)
     {
         $_SESSION['flash'] = $value;
+    }
+
+    public function kick($reason) {
+        session_unset();
+        error_log('kicked => reason: ' . $reason);
+        unset($_GET);
+        unset($_POST);
+        header('Location: /');
     }
 }

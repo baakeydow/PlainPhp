@@ -1,6 +1,6 @@
 <?php
 
-namespace Model;
+namespace Model\News;
 
 use DateTime;
 
@@ -75,11 +75,7 @@ class News {
     }
 
     public function setAuthor($author) {
-        if (!is_string($author) || empty($author)) {
-            $this->errors[] = self::INVALID_AUTHOR;
-        } else {
-            $this->author = $author;
-        }
+        $this->author = $_SESSION['user'];
     }
 
     public function setTitle($title) {

@@ -2,6 +2,8 @@
 require __DIR__.'/App/Lib/SplClassLoader.php';
 require __DIR__.'/App/App.php';
 
+error_log('----------------New Call----------------');
+
 $LibLoader = new SplClassLoader('Lib', __DIR__.'/App');
 $LibLoader->register();
 $StrategyLoader = new SplClassLoader('Strategy', __DIR__.'/App');
