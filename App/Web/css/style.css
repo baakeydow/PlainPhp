@@ -1,0 +1,13 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700);
+
+body {
+    padding-top: 10px;
+}
+#content-form {
+    margin-bottom: 20px;
+}
+footer {
+    font-size: 90%;
+    padding-top: 40px;
+    text-align: center;
+}
