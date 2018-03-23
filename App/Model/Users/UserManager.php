@@ -25,12 +25,12 @@ class UserManager implements UserManagerInterface {
             $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) $start;
         }
 
-        return $this->DBManager->fetchAllUsers(User::class, $sql);
+        return $this->DBManager->fetchUsersData(User::class, $sql);
     }
 
     public function getUserById($id) {
         $sql = 'SELECT * FROM users WHERE id = :id';
-        return $this->DBManager->fetchOne(User::class, $sql, $id);
+        return $this->DBManager->fetchUsersData(User::class, $sql, $id);
     }
 
     public function delUser($id) {
@@ -47,12 +47,25 @@ class UserManager implements UserManagerInterface {
 
     public function addUser(User $user) {
         $sql = 'INSERT INTO users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, creationDate = NOW(), lastAccess = NOW()';
-        $this->DBManager->addOne($sql, $user->getNickName(), $user->getEmail(), $user->getPWD(), $user->getAccessLevel());
+        $this->DBManager->addOrUpdate($sql,
+        [
+            'nickname' => $user->getNickName(),
+            'email' => $user->getEmail(),
+            'password' => $user->getPWD(),
+            'accessLevel' => $user->getAccessLevel()
+        ]);
     }
 
     public function updateUser(User $user) {
         $sql = 'UPDATE users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, lastAccess = NOW() WHERE id = :id';
-        $this->DBManager->updateOne($sql, $user->getNickName(), $user->getEmail(), $user->getPWD(), $user->getAccessLevel(), $user->getId());
+        $this->DBManager->addOrUpdate($sql,
+        [
+            'nickname' => $user->getNickName(),
+            'email' => $user->getEmail(),
+            'password' => $user->getPWD(),
+            'accessLevel' => $user->getAccessLevel(),
+            'id' => $user->getId(),
+        ]);
     }
 
     public function countUsers() {

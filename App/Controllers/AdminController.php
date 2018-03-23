@@ -16,15 +16,23 @@ class AdminController extends IndexController {
     }
 
     public function delete($id) {
-        $this->newsManager->delNews($id);
+        if ($this->session->isAllowed()) {
+            $this->newsManager->delNews($id);
+        } else {
+            $this->session->kick('User not allowed to delete news');
+        }
+    }
+
+    public function updateNews(News $news) {
+        if ($this->session->isAllowed()) {
+            $this->newsManager->updateNews($news);
+        } else {
+            $this->session->kick('User not allowed to update news');
+        }
     }
 
     public function save(News $news) {
         $this->newsManager->saveNews($news);
-    }
-
-    public function update(News $news) {
-        $this->newsManager->updateNews($news);
     }
 
     public function countNews() {
@@ -42,15 +50,27 @@ class AdminController extends IndexController {
     }
 
     public function getSingleUser($id) {
-        return $this->userManager->getUserById($id);
+        if ($this->session->isAllowed()) {
+            return $this->userManager->getUserById($id);
+        } else {
+            $this->session->kick('User not allowed to query users');
+        }
     }
 
     public function delSingleUser($id) {
-        return $this->userManager->delUser($id);
+        if ($this->session->isAllowed()) {
+            $this->userManager->delUser($id);
+        } else {
+            $this->session->kick('User not allowed to delete users');
+        }
     }
 
-    public function saveAddedUser(User $user) {
-        return $this->userManager->saveUser($user);
+    public function saveAddedUser(User $user, $bypass = NULL) {
+        if ($this->session->isAllowed() || $bypass) {
+            $this->userManager->saveUser($user);
+        } else {
+            $this->session->kick('User not allowed to add new users');
+        }
     }
 
     public function countUsers() {

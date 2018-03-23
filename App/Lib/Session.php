@@ -31,6 +31,11 @@ class Session
         return isset($_SESSION['auth']) && $_SESSION['auth'] === true;
     }
 
+    public function isAllowed()
+    {
+        return isset($_SESSION['level']) && $_SESSION['level'] == '1';
+    }
+
     public function setAttribute($attr, $value)
     {
         $_SESSION[$attr] = $value;

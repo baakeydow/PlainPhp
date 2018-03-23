@@ -34,7 +34,7 @@ class ENV extends AppComponent {
         $user = $Ctrl->getCredentials($login, $password);
         if ($user) {
             $this->session->setAuthenticated(true, $user);
-            $Ctrl->saveAddedUser($user);
+            $Ctrl->saveAddedUser($user, 'login');
             return true;
         }
         $this->session->setFlash('Username or Password Invalid ! try again...');
@@ -58,8 +58,12 @@ class ENV extends AppComponent {
             }
         }
         if (isset($_GET['delete'])) {
-            $Ctrl->delete((int) $_GET['delete']);
-            $message = 'The news has been removed !';
+            if (isset($_SESSION['level']) && $_SESSION['level'] == '1') {
+                $Ctrl->delete((int) $_GET['delete']);
+                $message = 'The news has been removed !';
+            } else {
+                $this->session->kick('user not allowed to delete news');
+            }
         }
         if (isset($_POST['content'])) {
             $news = new News(
@@ -73,7 +77,7 @@ class ENV extends AppComponent {
                 $news->setId($_POST['id']);
             }
             if ($news->isValid()) {
-                $Ctrl->save($news);
+                $news->isNew() ? $Ctrl->save($news) : $Ctrl->updateNews($news);
                 $message = $news->isNew() ? 'The news has been added !' : 'The news has been modified !';
                 unset($news);
             } else {

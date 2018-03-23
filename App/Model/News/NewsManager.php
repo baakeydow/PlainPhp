@@ -2,6 +2,7 @@
 namespace Model\News;
 
 use PDO;
+use RuntimeException;
 use Model\DB\NewsDBManager;
 
 class NewsManager implements NewsManagerInterface {
@@ -19,13 +20,13 @@ class NewsManager implements NewsManagerInterface {
             $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) $start;
         }
 
-        return $this->DBManager->fetchAllNews(News::class, $sql);
+        return $this->DBManager->fetchNewsData(News::class, $sql);
     }
 
     public function getNewsById($id) {
         $sql = 'SELECT id, author, title, content, dateAdded, dateModif FROM news WHERE id = :id';
 
-        return $this->DBManager->fetchOne(News::class, $sql, $id);
+        return $this->DBManager->fetchNewsData(News::class, $sql, $id);
     }
 
     public function delNews($id) {
@@ -42,12 +43,23 @@ class NewsManager implements NewsManagerInterface {
 
     public function addNews(News $news) {
         $sql = 'INSERT INTO news SET author = :author, title = :title, content = :content, dateAdded = NOW(), dateModif = NOW()';
-        $this->DBManager->addOne($sql, $news->getTitle(), $news->getAuthor(), $news->getContent());
+        $this->DBManager->addOrUpdate($sql,
+        [
+            'title' => $news->getTitle(),
+            'author' => $news->getAuthor(),
+            'content' => $news->getContent(),
+        ]);
     }
 
     public function updateNews(News $news) {
         $sql = 'UPDATE news SET author = :author, title = :title, content = :content, dateModif = NOW() WHERE id = :id';
-        $this->DBManager->updateOne($sql, $news->getTitle(), $news->getAuthor(), $news->getContent(), $news->getId());
+        $this->DBManager->addOrUpdate($sql,
+        [
+            'title' => $news->getTitle(),
+            'author' => $news->getAuthor(),
+            'content' => $news->getContent(),
+            'id' => $news->getId()
+        ]);
     }
 
     public function countNews() {
