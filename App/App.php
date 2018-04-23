@@ -1,6 +1,6 @@
 <?php
 
-use Strategy\ENV;
+use Model\AppComponent;
 use Utils\DBFactory;
 
 class App
@@ -14,8 +14,8 @@ class App
 
     public function run()
     {
-        $env = new ENV($this->db);
-        $env->getRoute(strtok($_SERVER['REQUEST_URI'], '?'));
+        $strategy = new AppComponent($this->db);
+        $strategy->getRoute(strtok($_SERVER['REQUEST_URI'], '?'));
     }
 }
 

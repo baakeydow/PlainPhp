@@ -3,14 +3,15 @@
 namespace Model\Users;
 
 use PDO;
-use Model\DB\UserDBManager;
+use Model\DB\DBManager;
+use Model\ManagerInterface;
 
-class UserManager implements UserManagerInterface {
+class UserManager implements ManagerInterface {
 
     protected $DBManager;
 
     public function __construct(PDO $db) {
-        $this->DBManager = new UserDBManager($db);
+        $this->DBManager = new DBManager($db);
     }
 
     public function login($nickname, $pwd) {
@@ -18,34 +19,34 @@ class UserManager implements UserManagerInterface {
         return $this->DBManager->fetchLogin(User::class, $sql, $nickname, $pwd);
     }
 
-    public function getUsersList($start = -1, $limit = -1) {
+    public function getList($start = -1, $limit = -1) {
         $sql = 'SELECT * FROM users ORDER BY id DESC';
 
         if ($start != -1 || $limit != -1) {
             $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) $start;
         }
 
-        return $this->DBManager->fetchUsersData(User::class, $sql);
+        return $this->DBManager->fetchData(User::class, $sql);
     }
 
-    public function getUserById($id) {
+    public function getById($id) {
         $sql = 'SELECT * FROM users WHERE id = :id';
-        return $this->DBManager->fetchUsersData(User::class, $sql, $id);
+        return $this->DBManager->fetchData(User::class, $sql, $id);
     }
 
-    public function delUser($id) {
+    public function delById($id) {
         $this->DBManager->delById('users', $id);
     }
 
-    public function saveUser(User $user) {
+    public function save($user) {
         if ($user->isValid()) {
-            $user->isNew() ? $this->addUser($user) : $this->updateUser($user);
+            $user->isNew() ? $this->add($user) : $this->update($user);
         } else {
             throw new RuntimeException('User not Valid');
         }
     }
 
-    public function addUser(User $user) {
+    public function add($user) {
         $sql = 'INSERT INTO users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, creationDate = NOW(), lastAccess = NOW()';
         $this->DBManager->addOrUpdate($sql,
         [
@@ -56,7 +57,7 @@ class UserManager implements UserManagerInterface {
         ]);
     }
 
-    public function updateUser(User $user) {
+    public function update($user) {
         $sql = 'UPDATE users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, lastAccess = NOW() WHERE id = :id';
         $this->DBManager->addOrUpdate($sql,
         [
@@ -68,7 +69,7 @@ class UserManager implements UserManagerInterface {
         ]);
     }
 
-    public function countUsers() {
+    public function count() {
         return $this->DBManager->count('users');
     }
 }

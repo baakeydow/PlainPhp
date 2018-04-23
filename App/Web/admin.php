@@ -15,10 +15,11 @@
                 <p><a href="/">Go Back to Home</a></p>
                 <p><a href="/out">Log out</a></p>
             </header>
-            <?php if (isset($_SESSION['level']) && $_SESSION['level'] == 1) {
-                error_log(var_export($_SESSION, true));
-            ?>
             <div class="row">
+                <?php if (isset($_SESSION['level']) && $_SESSION['level'] == 1) {
+                    echo '<h1 style="margin-bottom:20px;"> Welcome <b><a href="/">' . $_SESSION['user'] . '</a></b> ! </h1>';
+                    echo '<p style="margin-bottom:20px;"> You have <b> full access </b> to this admin ! </p>';
+                ?>
                 <h1 style="margin-bottom:60px;">Users Manager</h1>
                 <div id="content-form" class="col-sm-12">
                     <form action="/admin" class="form-horizontal" method="post">
