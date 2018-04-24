@@ -2,40 +2,29 @@
 namespace Model;
 
 use PDO;
-use Lib\Page;
 use Lib\Session;
 use Lib\HTTPRequest;
-use Model\News\NewsManager;
-use Model\News\News;
-use Model\Users\User;
-use Controllers\IndexController;
-use Controllers\AdminController;
+use Controller\MainController;
 
 class AppComponent {
 
-    protected $db,
-              $newsManager,
+    protected $ctrl,
               $session,
-              $req,
-              $page;
+              $req;
 
     public function __construct(PDO $db)
     {
-        $this->db = $db;
-        $this->newsManager = new NewsManager($db);
         $this->session = new Session;
+        $this->ctrl = new MainController($db, $this->session);
         $this->req = new HTTPRequest;
-        $this->page = new Page('index');
     }
 
     public function getRoute($URI)
     {
         if ($URI === '/') {
-            $Ctrl = new IndexController($this->db);
-            $Ctrl->index();
+            $this->ctrl->indexView();
         } else if ($URI === '/admin') {
-            $Ctrl = new AdminController($this->db);
-            $this->controlAccess($Ctrl);
+            $this->controlAccess();
         } else if ($URI === '/out') {
             $this->session->kick('loging out');
         } else {
@@ -43,10 +32,10 @@ class AppComponent {
         }
     }
 
-    private function controlAccess($Ctrl)
+    private function controlAccess()
     {
         if ($this->session->isAuthenticated() || $this->login($this->req)) {
-            $Ctrl->index();
+            $this->ctrl->adminView();
         } else {
             require 'App/Web/login.php';
         }
@@ -59,11 +48,10 @@ class AppComponent {
         }
         $login = $request->postData('username');
         $password = $request->postData('passwd');
-        $Ctrl = new AdminController($this->db);
-        $user = $Ctrl->getCredentials($login, $password);
+        $user = $this->ctrl->getCredentials($login, $password);
         if ($user) {
             $this->session->setAuthenticated(true, $user);
-            $Ctrl->saveAddedUser($user, 'login');
+            $this->ctrl->save('users', $user, 'login');
             return true;
         }
         $this->session->setFlash('Username or Password Invalid ! try again...');

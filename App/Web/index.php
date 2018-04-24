@@ -15,7 +15,7 @@
                 <?php
                 if (isset($_GET['id'])) {
                     echo '<p><a href="/">Go to Home page</a></p>';
-                    $news = $Ctrl->getOne((int) $_GET['id']);
+                    $news = $Ctrl->getOne('news', (int) $_GET['id']);
                     echo '<p style="margin:0 20px;text-align: center;">By <em>', $news->getAuthor(), '</em>, the ', $news->getDateAdded()->format('d/m/Y @ H\hi'), '</p>', "\n",
                     '<h2 style="margin-bottom: 20px;text-align: right;">', $news->getTitle(), '</h2>', "\n",
                     '<pre>', nl2br($news->getContent()), '</pre>', "\n";
@@ -25,7 +25,7 @@
                 } else {
                     echo '<p><a href="/admin">Go to admin Page</a></p>';
                     echo '<h1 style="text-align:center;margin-bottom:60px;">Here is the 5 latest news added</h1>';
-                    foreach ($Ctrl->getNews(0, 5) as $news) {
+                    foreach ($Ctrl->getThem('news', 0, 5) as $news) {
                         if (strlen($news->getContent()) <= 800) {
                             $content = $news->getContent();
                         } else {

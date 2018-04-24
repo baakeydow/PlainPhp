@@ -85,7 +85,7 @@
                     </form>
                 </div>
                 <div class="col-sm-12">
-                    <p class="alert alert-info"><strong>There is currently <?php echo $Ctrl->countUsers(); ?> users:</strong></p>
+                    <p class="alert alert-info"><strong>There is currently <?php echo $Ctrl->count('users'); ?> users:</strong></p>
                 </div>
                 <div class="col-sm-12">
                     <table class="table table-bordered">
@@ -99,7 +99,7 @@
                             <th>Actions</th>
                         </tr>
                         <?php
-                        foreach ($Ctrl->getUsers() as $user)
+                        foreach ($Ctrl->getThem('users') as $user)
                         {
                           echo '<tr><td>' . $user->getNickName() .
                                '</td><td>' . $user->getEmail() .
@@ -176,7 +176,7 @@
                     </form>
                 </div>
                 <div class="col-sm-12">
-                    <p class="alert alert-info"><strong>There is currently <?php echo $Ctrl->countNews(); ?> news. Here is the List:</strong></p>
+                    <p class="alert alert-info"><strong>There is currently <?php echo $Ctrl->count('news'); ?> news. Here is the List:</strong></p>
                 </div>
                 <div  class="col-sm-12">
                     <table class="table table-bordered">
@@ -188,7 +188,7 @@
                             <th>Actions</th>
                         </tr>
                         <?php
-                        foreach ($Ctrl->getNews() as $news)
+                        foreach ($Ctrl->getThem('news') as $news)
                         {
                           echo '<tr><td>' . $news->getAuthor() .
                                '</td><td>' . $news->getTitle() .
