@@ -48,20 +48,20 @@ class DBManager
             if (is_array($data)) {
                 foreach ($data as $n) {
                     if ($class === 'Model\Users\User') {
-                        $n->setDateCreated(new DateTime($n->getDateCreated()));
-                        $n->setLastAccess(new DateTime($n->getLastAccess()));
+                        $n->set('creationDate', new DateTime($n->get('creationDate')));
+                        $n->set('lastAccess', new DateTime($n->get('lastAccess')));
                     } else {
-                        $n->setDateAdded(new DateTime($n->getDateAdded()));
-                        $n->setDateModified(new DateTime($n->getDateModified()));
+                        $n->set('dateAdded', new DateTime($n->get('dateAdded')));
+                        $n->set('dateModif', new DateTime($n->get('dateModif')));
                     }
                 }
             } else {
                 if ($class === 'Model\Users\User') {
-                    $data->setDateCreated(new DateTime($data->getDateCreated()));
-                    $data->setLastAccess(new DateTime($data->getLastAccess()));
+                    $data->set('creationDate', new DateTime($data->get('creationDate')));
+                    $data->set('lastAccess', new DateTime($data->get('lastAccess')));
                 } else {
-                    $data->setDateAdded(new DateTime($data->getDateAdded()));
-                    $data->setDateModified(new DateTime($data->getDateModified()));
+                    $data->set('dateAdded', new DateTime($data->get('dateAdded')));
+                    $data->set('dateModif', new DateTime($data->get('dateModif')));
                 }
             }
             $request->closeCursor();

@@ -56,10 +56,10 @@ class AppManager implements ManagerInterface {
         $sql = 'INSERT INTO users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, creationDate = NOW(), lastAccess = NOW()';
         $this->DBManager->addOrUpdate($sql,
         [
-            'nickname' => $user->getNickName(),
-            'email' => $user->getEmail(),
-            'password' => $user->getPWD(),
-            'accessLevel' => $user->getAccessLevel()
+            'nickname' => $user->get('nickname'),
+            'email' => $user->get('email'),
+            'password' => $user->get('password'),
+            'accessLevel' => $user->get('accessLevel')
         ]);
     }
 
@@ -67,11 +67,11 @@ class AppManager implements ManagerInterface {
         $sql = 'UPDATE users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, lastAccess = NOW() WHERE id = :id';
         $this->DBManager->addOrUpdate($sql,
         [
-            'nickname' => $user->getNickName(),
-            'email' => $user->getEmail(),
-            'password' => $user->getPWD(),
-            'accessLevel' => $user->getAccessLevel(),
-            'id' => $user->getId(),
+            'nickname' => $user->get('nickname'),
+            'email' => $user->get('email'),
+            'password' => $user->get('password'),
+            'accessLevel' => $user->get('accessLevel'),
+            'id' => $user->get('id'),
         ]);
     }
 
@@ -79,9 +79,9 @@ class AppManager implements ManagerInterface {
         $sql = 'INSERT INTO news SET author = :author, title = :title, content = :content, dateAdded = NOW(), dateModif = NOW()';
         $this->DBManager->addOrUpdate($sql,
         [
-            'title' => $news->getTitle(),
-            'author' => $news->getAuthor(),
-            'content' => $news->getContent(),
+            'title' => $news->get('title'),
+            'author' => $news->get('author'),
+            'content' => $news->get('content'),
         ]);
     }
 
@@ -89,10 +89,10 @@ class AppManager implements ManagerInterface {
         $sql = 'UPDATE news SET author = :author, title = :title, content = :content, dateModif = NOW() WHERE id = :id';
         $this->DBManager->addOrUpdate($sql,
         [
-            'title' => $news->getTitle(),
-            'author' => $news->getAuthor(),
-            'content' => $news->getContent(),
-            'id' => $news->getId()
+            'title' => $news->get('title'),
+            'author' => $news->get('author'),
+            'content' => $news->get('content'),
+            'id' => $news->get('id')
         ]);
     }
 

@@ -34,7 +34,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="nickname">Nickname:</label>
                             <div class="col-sm-10 focus">
-                                <input class="form-control" type="text" name="nickname" placeholder="DoftomDow" required value="<?php if (isset($user)) { echo $user->getNickName(); } ?>">
+                                <input class="form-control" type="text" name="nickname" placeholder="DoftomDow" required value="<?php if (isset($user)) { echo $user->get('nickname'); } ?>">
                             </div>
                         </div>
                         <?php
@@ -45,7 +45,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="email">Email:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" name="email" placeholder="doftom@dow.com" required value="<?php if (isset($user)) { echo $user->getEmail(); } ?>">
+                                <input class="form-control" type="text" name="email" placeholder="doftom@dow.com" required value="<?php if (isset($user)) { echo $user->get('email'); } ?>">
                             </div>
                         </div>
                         <?php
@@ -56,24 +56,24 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="pwd">Password:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="password" name="pwd" placeholder="*@#*@#*#@*#***..." required value="<?php if (isset($user)) { echo $user->getPWD(); } ?>">
+                                <input class="form-control" type="password" name="pwd" placeholder="*@#*@#*#@*#***..." required value="<?php if (isset($user)) { echo $user->get('password'); } ?>">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="admin">Give super user permission:</label>
                             <div class="col-sm-10">
                                 <input type="radio" name="admin"
-                                <?php if (isset($user) && $user->getAccessLevel() == 1) echo "checked";?>
+                                <?php if (isset($user) && $user->get('accessLevel') == 1) echo "checked";?>
                                 value="true">yes
                                 <input type="radio" name="admin"
-                                <?php if (isset($user) && $user->getAccessLevel() == 2) echo "checked";?>
+                                <?php if (isset($user) && $user->get('accessLevel') == 2) echo "checked";?>
                                 value="false">nope
                             </div>
                         </div>
                         <?php
                             if (isset($user) && !$user->isNew()) {
                             ?>
-                                <input type="hidden" name="userId" value="<?php echo $user->getId() ?>">
+                                <input type="hidden" name="userId" value="<?php echo $user->get('id') ?>">
                                 <input class="btn btn-primary pull-right" type="submit" value="Edit" name="editUser">
                             <?php
                             } else {
@@ -101,13 +101,13 @@
                         <?php
                         foreach ($Ctrl->getThem('users') as $user)
                         {
-                          echo '<tr><td>' . $user->getNickName() .
-                               '</td><td>' . $user->getEmail() .
-                               '</td><td>' . $user->getPWD() .
-                               '</td><td>' . $user->getAccessLevel() .
-                               '</td><td>' . $user->getDateCreated()->format('d/m/Y @ H\hi') .
-                               '</td><td>' . ($user->getDateCreated() == $user->getLastAccess() ? '-' : $user->getLastAccess()->format('d/m/Y @ H\hi')) .
-                               '</td><td><a href="?editUser=' . $user->getId() . '">Edit</a> | <a href="?delUser=' . $user->getId() . '">Delete</a></td></tr>';
+                          echo '<tr><td>' . $user->get('nickname') .
+                               '</td><td>' . $user->get('email') .
+                               '</td><td>' . $user->get('password') .
+                               '</td><td>' . $user->get('accessLevel') .
+                               '</td><td>' . $user->get('creationDate')->format('d/m/Y @ H\hi') .
+                               '</td><td>' . ($user->get('creationDate') == $user->get('lastAccess') ? '-' : $user->get('lastAccess')->format('d/m/Y @ H\hi')) .
+                               '</td><td><a href="?editUser=' . $user->get('id') . '">Edit</a> | <a href="?delUser=' . $user->get('id') . '">Delete</a></td></tr>';
                         }
                         ?>
                     </table>
@@ -147,7 +147,7 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="title">Title:</label>
                             <div class="col-sm-10">
-                                <input class="form-control" type="text" name="title" placeholder="Title" required value="<?php if (isset($news)) { echo $news->getTitle(); } ?>">
+                                <input class="form-control" type="text" name="title" placeholder="Title" required value="<?php if (isset($news)) { echo $news->get('title'); } ?>">
                             </div>
                         </div>
                         <?php
@@ -158,13 +158,13 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label" for="content">Content:</label>
                             <div class="col-sm-10">
-                                <textarea class="form-control" rows="8" required name="content"><?php if (isset($news)) { echo $news->getContent(); } ?></textarea>
+                                <textarea class="form-control" rows="8" required name="content"><?php if (isset($news)) { echo $news->get('content'); } ?></textarea>
                             </div>
                         </div>
                         <?php
                             if (isset($news) && !$news->isNew()) {
                             ?>
-                                <input type="hidden" name="id" value="<?php echo $news->getId() ?>">
+                                <input type="hidden" name="id" value="<?php echo $news->get('id') ?>">
                                 <input class="btn btn-primary pull-right" type="submit" value="Edit" name="modif">
                             <?php
                             } else {
@@ -190,11 +190,11 @@
                         <?php
                         foreach ($Ctrl->getThem('news') as $news)
                         {
-                          echo '<tr><td>' . $news->getAuthor() .
-                               '</td><td>' . $news->getTitle() .
-                               '</td><td>' . $news->getDateAdded()->format('d/m/Y @ H\hi') .
-                               '</td><td>' . ($news->getDateAdded() == $news->getDateModified() ? '-' : $news->getDateModified()->format('d/m/Y @ H\hi')) .
-                               '</td><td><a href="?modif=' . $news->getId() . '">Edit</a> | <a href="?delete=' . $news->getId() . '">Delete</a></td></tr>';
+                          echo '<tr><td>' . $news->get('author') .
+                               '</td><td>' . $news->get('title') .
+                               '</td><td>' . $news->get('dateAdded')->format('d/m/Y @ H\hi') .
+                               '</td><td>' . ($news->get('dateAdded') == $news->get('dateModif') ? '-' : $news->get('dateModif')->format('d/m/Y @ H\hi')) .
+                               '</td><td><a href="?modif=' . $news->get('id') . '">Edit</a> | <a href="?delete=' . $news->get('id') . '">Delete</a></td></tr>';
                         }
                         ?>
                     </table>

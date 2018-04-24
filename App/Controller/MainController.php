@@ -55,7 +55,7 @@ class MainController {
                 ]
             );
             if (isset($_POST['id'])) {
-                $news->setId($_POST['id']);
+                $news->set('id', $_POST['id']);
             }
             if ($news->isValid()) {
                 $this->save('news', $news, $news->isNew());
@@ -63,7 +63,7 @@ class MainController {
                 $this->page->addVar('message', $message);
                 unset($news);
             } else {
-                $this->page->addVar('errors', $news->getErrors());
+                $this->page->addVar('errors', $news->get('errors'));
             }
         }
         // user
@@ -88,7 +88,7 @@ class MainController {
                 ]
             );
             if (isset($_POST['userId'])) {
-                $user->setId($_POST['userId']);
+                $user->set('id', $_POST['userId']);
             }
             if ($user->isValid()) {
                 $this->save('users', $user, false);
@@ -96,7 +96,7 @@ class MainController {
                 $this->page->addVar('userNotice', $userNotice);
                 unset($user);
             } else {
-                $this->page->addVar('errors', $user->getErrors());
+                $this->page->addVar('errors', $user->get('errors'));
             }
         }
         $this->page->send();

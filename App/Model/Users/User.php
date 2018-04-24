@@ -6,14 +6,7 @@ use DateTime;
 
 class User {
 
-    protected $errors = [],
-            $id,
-            $nickname,
-            $email,
-            $password,
-            $accessLevel,
-            $creationDate,
-            $lastAccess;
+    protected $data = [];
 
     const INVALID_NAME = 1;
     const INVALID_EMAIL = 2;
@@ -27,92 +20,68 @@ class User {
 
     public function hydrate($data) {
         foreach ($data as $key => $value) {
-            $method = 'set' . ucfirst($key);
-
-            if (is_callable([$this, $method])) {
-                $this->$method($value);
-            }
+            $this->set($key, $value);
         }
+    }
+
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->data)) {
+            return $this->data[$name];
+        }
+        return null;
+    }
+
+    public function set($key, $value) {
+        switch ($key) {
+            case 'nickname':
+                if (!is_string($value) || empty($value)) {
+                    $this->__set('error', self::INVALID_NAME);
+                } else {
+                    $this->__set($key, $value);
+                }
+                break;
+            case 'email':
+                if (!is_string($value) || empty($value)) {
+                    $this->__set('error', self::INVALID_EMAIL);
+                } else {
+                    $this->__set($key, $value);
+                }
+                break;
+            case 'password':
+                if (!is_string($value) || empty($value)) {
+                    $this->__set('error', self::INVALID_PWD);
+                } else {
+                    $this->__set($key, $value);
+                }
+                break;
+            case 'accessLevel':
+                $lvl = !empty($value) && $value === 'true' ? 1 : 2;
+                $this->__set($key, $lvl);
+                break;
+            default:
+                if (is_string($key) && !empty($key) && !empty($value)) {
+                    $this->__set($key, $value);
+                }
+                break;
+        }
+    }
+
+    public function get($key) {
+        return $this->__get($key);
     }
 
     public function isNew() {
-        return empty($this->id);
-    }
-
-    public function getAccessLevel() {
-        return $this->accessLevel;
+        return empty($this->get('id'));
     }
 
     public function isValid() {
-        return !(empty($this->accessLevel) || empty($this->nickname) || empty($this->email) || empty($this->password) || empty($this->accessLevel));
-    }
-
-    public function getErrors() {
-        return $this->errors;
-    }
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getNickName() {
-        return $this->nickname;
-    }
-
-    public function getEmail() {
-        return $this->email;
-    }
-
-    public function getPWD() {
-        return $this->password;
-    }
-
-    public function getDateCreated() {
-        return $this->creationDate;
-    }
-
-    public function getLastAccess() {
-        return $this->lastAccess;
-    }
-
-    public function setId($id) {
-        $this->id = (int) $id;
-    }
-
-    public function setNickname($nickname) {
-        if (!is_string($nickname) || empty($nickname)) {
-            $this->errors[] = self::INVALID_NAME;
-        } else {
-            $this->nickname = $nickname;
-        }
-    }
-
-    public function setEmail($email) {
-        if (!is_string($email) || empty($email)) {
-            $this->errors[] = self::INVALID_EMAIL;
-        } else {
-            $this->email = $email;
-        }
-    }
-
-    public function setPassword($password) {
-        if (empty($password)) {
-            $this->errors[] = self::INVALID_PWD;
-        } else {
-            $this->password = $password;
-        }
-    }
-
-    public function setAccesslevel($accessLevel) {
-        $this->accessLevel = !empty($accessLevel) && $accessLevel === 'true' ? 1 : 2;
-    }
-
-    public function setDateCreated(DateTime $creationDate) {
-        $this->creationDate = $creationDate;
-    }
-
-    public function setLastAccess(DateTime $lastAccess) {
-        $this->lastAccess = $lastAccess;
+        return !(empty($this->get('accessLevel')) || empty($this->get('nickname')) || empty($this->get('email')) || empty($this->get('password')));
     }
 
 }

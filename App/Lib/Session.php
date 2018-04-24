@@ -49,8 +49,8 @@ class Session
         }
 
         $_SESSION['auth'] = $authenticated;
-        $_SESSION['user'] = $user->getNickName();
-        $_SESSION['level'] = $user->getAccessLevel();
+        $_SESSION['user'] = $user->get('nickname');
+        $_SESSION['level'] = $user->get('accessLevel');
         return $user;
     }
 

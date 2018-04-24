@@ -6,17 +6,10 @@ use DateTime;
 
 class News {
 
-    protected $errors = [],
-            $id,
-            $author,
-            $title,
-            $content,
-            $dateAdded,
-            $dateModif;
+    private $data = [];
 
-    const INVALID_AUTHOR = 1;
-    const INVALID_TITLE = 2;
-    const INVALID_CONTENT = 3;
+    const INVALID_TITLE = 1;
+    const INVALID_CONTENT = 2;
 
     public function __construct($values = []) {
         if (!empty($values)) {
@@ -26,80 +19,60 @@ class News {
 
     public function hydrate($data) {
         foreach ($data as $key => $value) {
-            $methode = 'set' . ucfirst($key);
-
-            if (is_callable([$this, $methode])) {
-                $this->$methode($value);
-            }
+            $this->set($key, $value);
         }
+    }
+
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
+    }
+
+    public function __get($name)
+    {
+        if (array_key_exists($name, $this->data)) {
+            return $this->data[$name];
+        }
+        return null;
+    }
+
+    public function set($key, $value) {
+        switch ($key) {
+            case 'title':
+                if (!is_string($value) || empty($value)) {
+                    $this->__set('error', self::INVALID_TITLE);
+                } else {
+                    $this->__set($key, $value);
+                }
+                break;
+            case 'content':
+                if (!is_string($value) || empty($value)) {
+                    $this->__set('error', self::INVALID_CONTENT);
+                } else {
+                    $this->__set($key, $value);
+                }
+                break;
+            case 'author':
+                $this->__set($key, $_SESSION['user']);
+                break;
+            default:
+                if (is_string($key) && !empty($key) && !empty($value)) {
+                    $this->__set($key, $value);
+                }
+                break;
+        }
+    }
+
+    public function get($key) {
+        return $this->__get($key);
     }
 
     public function isNew() {
-        return empty($this->id);
+        return empty($this->get('id'));
     }
 
     public function isValid() {
-        return !(empty($this->author) || empty($this->title) || empty($this->content));
-    }
-
-    public function getErrors() {
-        return $this->errors;
-    }
-
-    public function getId() {
-        return $this->id;
-    }
-
-    public function getAuthor() {
-        return $this->author;
-    }
-
-    public function getTitle() {
-        return $this->title;
-    }
-
-    public function getContent() {
-        return $this->content;
-    }
-
-    public function getDateAdded() {
-        return $this->dateAdded;
-    }
-
-    public function getDateModified() {
-        return $this->dateModif;
-    }
-
-    public function setId($id) {
-        $this->id = (int) $id;
-    }
-
-    public function setAuthor($author) {
-        $this->author = $_SESSION['user'];
-    }
-
-    public function setTitle($title) {
-        if (!is_string($title) || empty($title)) {
-            $this->errors[] = self::INVALID_TITLE;
-        } else {
-            $this->title = $title;
-        }
-    }
-
-    public function setContent($content) {
-        if (!is_string($content) || empty($content)) {
-            $this->errors[] = self::INVALID_CONTENT;
-        } else {
-            $this->content = $content;
-        }
-    }
-
-    public function setDateAdded(DateTime $dateAdded) {
-        $this->dateAdded = $dateAdded;
-    }
-
-    public function setDateModified(DateTime $dateModif) {
-        $this->dateModif = $dateModif;
+        return !(empty($this->get('author')) || empty($this->get('title')) || empty($this->get('content')));
     }
 
 }
