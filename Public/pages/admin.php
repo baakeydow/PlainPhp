@@ -7,7 +7,7 @@
         <meta name="author" content="bndao">
         <title>Admin</title>
         <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-        <link rel="stylesheet" type="text/css"  href="App/Web/css/style.css" media="all">
+        <link rel="stylesheet" type="text/css"  href="css/style.css" media="all">
     </head>
     <body>
         <div class="container">

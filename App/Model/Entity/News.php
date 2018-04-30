@@ -1,40 +1,13 @@
 <?php
 
-namespace Model\News;
+namespace Model\Entity;
 
-use DateTime;
+use Model\Entity\Entity;
 
-class News {
-
-    private $data = [];
-
-    const INVALID_TITLE = 1;
-    const INVALID_CONTENT = 2;
-
-    public function __construct($values = []) {
-        if (!empty($values)) {
-            $this->hydrate($values);
-        }
-    }
-
-    public function hydrate($data) {
-        foreach ($data as $key => $value) {
-            $this->set($key, $value);
-        }
-    }
-
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        if (array_key_exists($name, $this->data)) {
-            return $this->data[$name];
-        }
-        return null;
-    }
+class News extends Entity
+{
+    const INVALID_TITLE = 4;
+    const INVALID_CONTENT = 5;
 
     public function set($key, $value) {
         switch ($key) {
@@ -63,16 +36,7 @@ class News {
         }
     }
 
-    public function get($key) {
-        return $this->__get($key);
-    }
-
-    public function isNew() {
-        return empty($this->get('id'));
-    }
-
     public function isValid() {
         return !(empty($this->get('author')) || empty($this->get('title')) || empty($this->get('content')));
     }
-
 }

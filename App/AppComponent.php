@@ -1,7 +1,5 @@
 <?php
-namespace Model;
 
-use PDO;
 use Lib\Session;
 use Lib\HTTPRequest;
 use Controller\MainController;
@@ -28,7 +26,7 @@ class AppComponent {
         } else if ($URI === '/out') {
             $this->session->kick('loging out');
         } else {
-            require 'App/Web/404.html';
+            require '../Public/pages/404.html';
         }
     }
 
@@ -37,7 +35,7 @@ class AppComponent {
         if ($this->session->isAuthenticated() || $this->login($this->req)) {
             $this->ctrl->adminView();
         } else {
-            require 'App/Web/login.php';
+            require '../Public/pages/login.php';
         }
     }
 

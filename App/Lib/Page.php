@@ -15,7 +15,7 @@ class Page
             throw new RuntimeException('view not valid');
         }
 
-        $this->file = __DIR__.'/../Web/' . $file . '.php';
+        $this->file = __DIR__.'/../../Public/pages/' . $file . '.php';
     }
 
     public function send()

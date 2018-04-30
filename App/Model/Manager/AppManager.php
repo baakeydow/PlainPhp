@@ -3,22 +3,96 @@
 namespace Model\Manager;
 
 use PDO;
-use Model\News\News;
-use Model\Users\User;
+use PDOException;
+use RuntimeException;
+use DateTime;
+use Model\Entity\News;
+use Model\Entity\User;
 
 class AppManager implements ManagerInterface {
 
     const MODEL = ['users' => User::class, 'news' => News::class];
 
-    protected $DBManager;
+    protected $db;
 
-    public function __construct(PDO $db) {
-        $this->DBManager = new DBManager($db);
+    public function __construct(PDO $database) {
+        $this->db = $database;
+    }
+
+    private function _addOrUpdate($query, $values)
+    {
+        if (!is_array($values)) return;
+        $request = $this->db->prepare($query);
+        foreach ($values as $key => $value) {
+            $request->bindValue(':' . $key, $value);
+            if ($key == 'id') {
+                $request->bindValue(':id', $value, PDO::PARAM_INT);
+            }
+        }
+        try {
+            $request->execute();
+        } catch (PDOException $e) {
+            error_log(var_export(debug_backtrace()[1]['function'] . 'Error: ' . $e->getMessage(), true));
+        }
+    }
+
+    private function _fetchData($class, $query, $id = NULL)
+    {
+        $data = [];
+        if ($class !== 'Model\Entity\User' && $class !== 'Model\Entity\News') {
+            throw new RuntimeException('unknown data type provided');
+        }
+        $request = $this->db->prepare($query);
+        $id && $request->bindValue(':id', (int) $id, PDO::PARAM_INT);
+        try {
+            $request->execute();
+            $request->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, $class);
+            $data =  $id ? $request->fetch() : $request->fetchAll();
+            if (!$data) {
+                return NULL;
+            }
+            if (is_array($data)) {
+                foreach ($data as $n) {
+                    if ($class === 'Model\Entity\User') {
+                        $n->set('creationDate', new DateTime($n->get('creationDate')));
+                        $n->set('lastAccess', new DateTime($n->get('lastAccess')));
+                    } else {
+                        $n->set('dateAdded', new DateTime($n->get('dateAdded')));
+                        $n->set('dateModif', new DateTime($n->get('dateModif')));
+                    }
+                }
+            } else {
+                if ($class === 'Model\Entity\User') {
+                    $data->set('creationDate', new DateTime($data->get('creationDate')));
+                    $data->set('lastAccess', new DateTime($data->get('lastAccess')));
+                } else {
+                    $data->set('dateAdded', new DateTime($data->get('dateAdded')));
+                    $data->set('dateModif', new DateTime($data->get('dateModif')));
+                }
+            }
+            $request->closeCursor();
+        } catch (PDOException $e) {
+            error_log(var_export(debug_backtrace()[1]['function'] . 'Error: ' . $e->getMessage(), true));
+        }
+
+        return $data;
     }
 
     public function login($nickname, $pwd) {
         $sql = 'SELECT * FROM users WHERE nickname = :nickname AND password = :password';
-        return $this->DBManager->fetchLogin(User::class, $sql, $nickname, $pwd);
+        $request = $this->db->prepare($sql);
+        $request->bindValue(':nickname', $nickname);
+        $request->bindValue(':password', $pwd);
+        $request->execute();
+        $request->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, User::class);
+
+        $user = $request->fetch();
+        if (!$user) {
+            return NULL;
+        }
+        $request->closeCursor();
+
+        return $user;
     }
 
     public function getList($table, $start = -1, $limit = -1) {
@@ -28,16 +102,16 @@ class AppManager implements ManagerInterface {
             $sql .= ' LIMIT ' . (int) $limit . ' OFFSET ' . (int) $start;
         }
 
-        return $this->DBManager->fetchData(self::MODEL[$table], $sql);
+        return $this->_fetchData(self::MODEL[$table], $sql);
     }
 
     public function getById($table, $id) {
         $sql = 'SELECT * FROM ' . $table . ' WHERE id = :id';
-        return $this->DBManager->fetchData(self::MODEL[$table], $sql, $id);
+        return $this->_fetchData(self::MODEL[$table], $sql, $id);
     }
 
     public function delById($table, $id) {
-        $this->DBManager->delById($table, $id);
+        $this->db->exec('DELETE FROM ' . $table .' WHERE id = ' . (int) $id);
     }
 
     public function save($table, $item) {
@@ -54,7 +128,7 @@ class AppManager implements ManagerInterface {
 
     private function addUser($user) {
         $sql = 'INSERT INTO users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, creationDate = NOW(), lastAccess = NOW()';
-        $this->DBManager->addOrUpdate($sql,
+        $this->_addOrUpdate($sql,
         [
             'nickname' => $user->get('nickname'),
             'email' => $user->get('email'),
@@ -65,7 +139,7 @@ class AppManager implements ManagerInterface {
 
     private function updateUser($user) {
         $sql = 'UPDATE users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, lastAccess = NOW() WHERE id = :id';
-        $this->DBManager->addOrUpdate($sql,
+        $this->_addOrUpdate($sql,
         [
             'nickname' => $user->get('nickname'),
             'email' => $user->get('email'),
@@ -77,7 +151,7 @@ class AppManager implements ManagerInterface {
 
     private function addNews($news) {
         $sql = 'INSERT INTO news SET author = :author, title = :title, content = :content, dateAdded = NOW(), dateModif = NOW()';
-        $this->DBManager->addOrUpdate($sql,
+        $this->_addOrUpdate($sql,
         [
             'title' => $news->get('title'),
             'author' => $news->get('author'),
@@ -87,7 +161,7 @@ class AppManager implements ManagerInterface {
 
     private function updateNews($news) {
         $sql = 'UPDATE news SET author = :author, title = :title, content = :content, dateModif = NOW() WHERE id = :id';
-        $this->DBManager->addOrUpdate($sql,
+        $this->_addOrUpdate($sql,
         [
             'title' => $news->get('title'),
             'author' => $news->get('author'),
@@ -97,6 +171,6 @@ class AppManager implements ManagerInterface {
     }
 
     public function count($table) {
-        return $this->DBManager->count($table);
+        return $this->db->query('SELECT COUNT(*) FROM ' . $table)->fetchColumn();
     }
 }

@@ -1,6 +1,6 @@
 <?php
+require 'AppComponent.php';
 
-use Model\AppComponent;
 use Utils\DBFactory;
 
 class App

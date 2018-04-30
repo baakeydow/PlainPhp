@@ -1,41 +1,14 @@
 <?php
 
-namespace Model\Users;
+namespace Model\Entity;
 
-use DateTime;
+use Model\Entity\Entity;
 
-class User {
-
-    protected $data = [];
-
+class User extends Entity
+{
     const INVALID_NAME = 1;
     const INVALID_EMAIL = 2;
     const INVALID_PWD = 3;
-
-    public function __construct($values = []) {
-        if (!empty($values)) {
-            $this->hydrate($values);
-        }
-    }
-
-    public function hydrate($data) {
-        foreach ($data as $key => $value) {
-            $this->set($key, $value);
-        }
-    }
-
-    public function __set($name, $value)
-    {
-        $this->data[$name] = $value;
-    }
-
-    public function __get($name)
-    {
-        if (array_key_exists($name, $this->data)) {
-            return $this->data[$name];
-        }
-        return null;
-    }
 
     public function set($key, $value) {
         switch ($key) {
@@ -70,14 +43,6 @@ class User {
                 }
                 break;
         }
-    }
-
-    public function get($key) {
-        return $this->__get($key);
-    }
-
-    public function isNew() {
-        return empty($this->get('id'));
     }
 
     public function isValid() {

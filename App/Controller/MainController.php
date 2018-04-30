@@ -3,8 +3,8 @@ namespace Controller;
 
 use PDO;
 use Lib\Page;
-use Model\News\News;
-use Model\Users\User;
+use Model\Entity\News;
+use Model\Entity\User;
 use Model\Manager\AppManager;
 
 class MainController {
@@ -16,7 +16,7 @@ class MainController {
     {
         $this->session = $session;
         $this->appManager = new AppManager($db);
-        $this->page = new Page('index');
+        $this->page = new Page('home');
     }
 
     public function indexView() {
