@@ -5,7 +5,6 @@ namespace Model\Manager;
 use PDO;
 use PDOException;
 use RuntimeException;
-use DateTime;
 use Model\Entity\News;
 use Model\Entity\User;
 
@@ -53,22 +52,10 @@ class AppManager implements ManagerInterface {
             }
             if (is_array($data)) {
                 foreach ($data as $n) {
-                    if ($class === 'Model\Entity\User') {
-                        $n->set('creationDate', new DateTime($n->get('creationDate')));
-                        $n->set('lastAccess', new DateTime($n->get('lastAccess')));
-                    } else {
-                        $n->set('dateAdded', new DateTime($n->get('dateAdded')));
-                        $n->set('dateModif', new DateTime($n->get('dateModif')));
-                    }
+                    $n->setDates();
                 }
             } else {
-                if ($class === 'Model\Entity\User') {
-                    $data->set('creationDate', new DateTime($data->get('creationDate')));
-                    $data->set('lastAccess', new DateTime($data->get('lastAccess')));
-                } else {
-                    $data->set('dateAdded', new DateTime($data->get('dateAdded')));
-                    $data->set('dateModif', new DateTime($data->get('dateModif')));
-                }
+                $data->setDates();
             }
             $request->closeCursor();
         } catch (PDOException $e) {

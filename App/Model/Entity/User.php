@@ -2,6 +2,7 @@
 
 namespace Model\Entity;
 
+use DateTime;
 use Model\Entity\Entity;
 
 class User extends Entity
@@ -43,6 +44,11 @@ class User extends Entity
                 }
                 break;
         }
+    }
+
+    public function setDates() {
+        $this->set('creationDate', new DateTime($this->get('creationDate')));
+        $this->set('lastAccess', new DateTime($this->get('lastAccess')));
     }
 
     public function isValid() {

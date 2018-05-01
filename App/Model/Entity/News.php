@@ -2,6 +2,7 @@
 
 namespace Model\Entity;
 
+use DateTime;
 use Model\Entity\Entity;
 
 class News extends Entity
@@ -34,6 +35,11 @@ class News extends Entity
                 }
                 break;
         }
+    }
+
+    public function setDates() {
+        $this->set('dateAdded', new DateTime($this->get('dateAdded')));
+        $this->set('dateModif', new DateTime($this->get('dateModif')));
     }
 
     public function isValid() {
