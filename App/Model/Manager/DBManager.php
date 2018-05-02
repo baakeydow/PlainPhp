@@ -8,7 +8,7 @@ use RuntimeException;
 use Model\Entity\News;
 use Model\Entity\User;
 
-class AppManager implements ManagerInterface {
+class DBManager implements ManagerInterface {
 
     const MODEL = ['users' => User::class, 'news' => News::class];
 
