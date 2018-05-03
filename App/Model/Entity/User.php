@@ -55,4 +55,26 @@ class User extends Entity
         return !(empty($this->get('accessLevel')) || empty($this->get('nickname')) || empty($this->get('email')) || empty($this->get('password')));
     }
 
+    public function add($db, $user) {
+        $sql = 'INSERT INTO users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, creationDate = NOW(), lastAccess = NOW()';
+        $this->addOrUpdate($db, $sql,
+        [
+            'nickname' => $user->get('nickname'),
+            'email' => $user->get('email'),
+            'password' => $user->get('password'),
+            'accessLevel' => $user->get('accessLevel')
+        ]);
+    }
+
+    public function update($db, $user) {
+        $sql = 'UPDATE users SET nickname = :nickname, email = :email, password = :password, accessLevel = :accessLevel, lastAccess = NOW() WHERE id = :id';
+        $this->addOrUpdate($db, $sql,
+        [
+            'nickname' => $user->get('nickname'),
+            'email' => $user->get('email'),
+            'password' => $user->get('password'),
+            'accessLevel' => $user->get('accessLevel'),
+            'id' => $user->get('id'),
+        ]);
+    }
 }

@@ -10,7 +10,7 @@ interface ManagerInterface {
 
     public function delById($table, $id);
 
-    public function save($table, $item);
+    public function save($item);
 
     public function count($table);
 }

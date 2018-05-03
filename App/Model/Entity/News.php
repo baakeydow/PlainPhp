@@ -45,4 +45,25 @@ class News extends Entity
     public function isValid() {
         return !(empty($this->get('author')) || empty($this->get('title')) || empty($this->get('content')));
     }
+
+    public function add($db, $news) {
+        $sql = 'INSERT INTO news SET author = :author, title = :title, content = :content, dateAdded = NOW(), dateModif = NOW()';
+        $this->addOrUpdate($db, $sql,
+        [
+            'title' => $news->get('title'),
+            'author' => $news->get('author'),
+            'content' => $news->get('content'),
+        ]);
+    }
+
+    public function update($db, $news) {
+        $sql = 'UPDATE news SET author = :author, title = :title, content = :content, dateModif = NOW() WHERE id = :id';
+        $this->addOrUpdate($db, $sql,
+        [
+            'title' => $news->get('title'),
+            'author' => $news->get('author'),
+            'content' => $news->get('content'),
+            'id' => $news->get('id')
+        ]);
+    }
 }

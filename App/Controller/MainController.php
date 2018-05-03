@@ -39,7 +39,7 @@ class MainController {
 
     public function save($table, $item, $bypass) {
         if ($this->session->isAllowed() || $bypass) {
-            $this->dbManager->save($table, $item);
+            $this->dbManager->save($item);
         } else {
             $this->session->kick('User not allowed to add');
         }
